@@ -1,6 +1,6 @@
 # Kaggle Playground Series S6E8 — Smartphone Addiction
 
-Phase 1 establishes local-only reconnaissance and a reusable baseline system. No public notebooks, discussions, external datasets, or leaderboard strategies were inspected.
+Phase 1 established local-only reconnaissance and a reusable baseline system. Phase 2 compares five untuned model families. No public notebooks, discussions, external datasets, or leaderboard strategies were inspected.
 
 ## Problem and data
 
@@ -15,9 +15,9 @@ Phase 1 establishes local-only reconnaissance and a reusable baseline system. No
 
 ## Metric and validation
 
-The sample submission contains probabilities, but the official competition metric cannot be confirmed reliably from the supplied CSVs alone. **Working assumption: ROC AUC**. Log loss and accuracy at 0.5 are also recorded so experiments remain interpretable if the official metric differs.
+The working official competition metric is **ROC AUC**. Log loss and accuracy at 0.5 are also recorded as diagnostics.
 
-All Phase 1 model comparisons use one reproducible scheme: 5-fold `StratifiedKFold(shuffle=True, random_state=42)`. Reported model scores are computed once from complete out-of-fold probabilities. Final test predictions are made only after refitting the selected pipeline on all training rows.
+All model comparisons use one reproducible scheme: 5-fold `StratifiedKFold(shuffle=True, random_state=42)`. Every family receives the identical precomputed row splits. Reported model scores are computed once from complete out-of-fold probabilities. Final test predictions are made only after refitting the selected pipeline on all training rows.
 
 ## Baseline results
 
@@ -27,6 +27,22 @@ All Phase 1 model comparisons use one reproducible scheme: 5-fold `StratifiedKFo
 | EXP-001 | Median/mode imputation + missing indicators + scaling/one-hot + logistic regression | 0.913785 | 0.338347 | 0.842285 |
 
 The ML fold ROC AUC range is 0.912733–0.914733. Because EXP-001 clearly beats the trivial baseline, `submissions/submission_01_baseline.csv` was generated and schema-validated locally. It has not been submitted.
+
+## Model-family comparison
+
+Conservative near-default settings were used without feature engineering or broad tuning. Logistic regression retains its imputation/one-hot pipeline. The tree models preserve numeric missing values; HistGradientBoosting, XGBoost, and LightGBM use aligned pandas categorical dtypes, while CatBoost receives the categorical columns natively with an explicit missing category.
+
+| Model | OOF AUC ↑ | Mean fold AUC | Fold AUC SD ↓ | OOF log loss ↓ | Δ vs logistic | CV fit time | CV predict time | Max serialized model |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| LightGBM | **0.960604** | 0.960605 | 0.000769 | 0.232012 | +0.046819 | 12.61 s | 1.44 s | 1.06 MB |
+| XGBoost | 0.960596 | 0.960598 | **0.000651** | **0.231060** | +0.046811 | 11.91 s | 0.38 s | 1.39 MB |
+| HistGradientBoosting | 0.957157 | 0.957160 | 0.000748 | 0.242273 | +0.043372 | 12.55 s | 0.99 s | 0.64 MB |
+| CatBoost | 0.953305 | 0.953308 | 0.000689 | 0.251253 | +0.039520 | 103.04 s | **0.21 s** | 0.34 MB |
+| LogisticRegression | 0.913785 | 0.913787 | 0.000861 | 0.338347 | — | **4.91 s** | 0.38 s | **0.004 MB** |
+
+LightGBM is the current champion by OOF ROC AUC. Its 0.0000074 advantage over XGBoost is negligible, so XGBoost remains effectively tied and has slightly better consistency, log loss, and prediction runtime. LightGBM was selected deterministically by OOF AUC, then fold consistency and runtime. It was refit on all training rows, and `submissions/submission_02_model.csv` was schema-validated locally. It has not been submitted.
+
+Native split-count importance for the fitted LightGBM is reconnaissance only: notifications per day (18.28%), app opens per day (18.26%), daily screen time (13.73%), weekend screen time (12.67%), and social media hours (11.52%) rank highest. Split-count importance is biased toward features with many candidate thresholds and is not causal.
 
 ## Reconnaissance notes
 
@@ -44,12 +60,15 @@ The ML fold ROC AUC range is 0.912733–0.914733. Because EXP-001 clearly beats 
 |---|---|---|---|---:|---|---|
 | EXP-000 | 2026-08-26 | 5-fold stratified CV, seed 42 | Constant prevalence | ROC AUC 0.500000 | — | Complete |
 | EXP-001 | 2026-08-26 | 5-fold stratified CV, seed 42 | Untuned logistic pipeline | ROC AUC 0.913785 | `submission_01_baseline.csv` | Complete |
+| EXP-002 | 2026-08-26 | Same 5 folds as EXP-001 | Five untuned model families; LightGBM champion | ROC AUC 0.960604 | `submission_02_model.csv` | Complete |
 
 ## Reproducing
 
 ```bash
 uv run python -m kaggle_smartphone_addiction.run_baseline
+uv run compare-models
 uv run jupyter nbconvert --to notebook --execute notebooks/01_reconnaissance.ipynb --output 01_reconnaissance.ipynb
+uv run jupyter nbconvert --to notebook --execute notebooks/02_model_comparison.ipynb --output 02_model_comparison.ipynb
 ```
 
-Detailed metrics are written to `reports/baseline_metrics.json`. Reusable loaders, schema definitions, CV, evaluation, final fitting, and submission validation live under `src/kaggle_smartphone_addiction/`.
+Detailed results are written to `reports/baseline_metrics.json`, `reports/model_comparison.csv`, and `reports/feature_importance.csv`. Reusable loaders, schema definitions, CV, evaluation, model comparison, final fitting, and submission validation live under `src/kaggle_smartphone_addiction/`.
