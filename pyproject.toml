@@ -24,6 +24,7 @@ dependencies = [
 [project.scripts]
 kaggle-smartphone-addiction = "kaggle_smartphone_addiction.run_baseline:main"
 compare-models = "kaggle_smartphone_addiction.model_comparison:main"
+evaluate-blend = "kaggle_smartphone_addiction.blending:main"
 
 [build-system]
 requires = ["uv_build>=0.12.6,<0.13.0"]

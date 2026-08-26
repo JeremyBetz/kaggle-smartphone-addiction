@@ -42,7 +42,31 @@ Conservative near-default settings were used without feature engineering or broa
 
 LightGBM is the current champion by OOF ROC AUC. Its 0.0000074 advantage over XGBoost is negligible, so XGBoost remains effectively tied and has slightly better consistency, log loss, and prediction runtime. LightGBM was selected deterministically by OOF AUC, then fold consistency and runtime. It was refit on all training rows, and `submissions/submission_02_model.csv` was schema-validated locally. It has not been submitted.
 
+Both Experiment 2 models achieved a public Kaggle ROC AUC of **0.96197** (`submission_02_model.csv` for LightGBM and `submission_02_xgboost.csv` for XGBoost). These public scores are recorded for context only and were not used to tune or select the Experiment 3 blend.
+
 Native split-count importance for the fitted LightGBM is reconnaissance only: notifications per day (18.28%), app opens per day (18.26%), daily screen time (13.73%), weekend screen time (12.67%), and social media hours (11.52%) rank highest. Split-count importance is biased toward features with many candidate thresholds and is not causal.
+
+## Probability blending
+
+Experiment 3 regenerated complete paired OOF predictions from the unchanged LightGBM and XGBoost configurations on the exact Experiment 2 folds. Their probabilities are highly correlated (Pearson 0.994432; Spearman 0.991288), but differ by 0.018883 on average and produce different 0.5-threshold classes for 1.9905% of rows. Disagreement is higher for true negatives (3.4078%) than true positives (1.4101%).
+
+Every interior LightGBM weight from 0.1 through 0.9 beats both individual models. The numerical optimum is the simple 50/50 blend:
+
+| LightGBM weight | XGBoost weight | OOF AUC ↑ | Log loss ↓ | Δ vs LightGBM | Δ vs XGBoost |
+|---:|---:|---:|---:|---:|---:|
+| 0.0 | 1.0 | 0.960596 | 0.231060 | -0.000007 | 0.000000 |
+| 0.1 | 0.9 | 0.960755 | 0.230670 | +0.000151 | +0.000158 |
+| 0.2 | 0.8 | 0.960878 | 0.230353 | +0.000274 | +0.000282 |
+| 0.3 | 0.7 | 0.960967 | 0.230104 | +0.000364 | +0.000371 |
+| 0.4 | 0.6 | 0.961023 | 0.229922 | +0.000419 | +0.000426 |
+| **0.5** | **0.5** | **0.961044** | 0.229809 | **+0.000441** | **+0.000448** |
+| 0.6 | 0.4 | 0.961032 | **0.229765** | +0.000429 | +0.000436 |
+| 0.7 | 0.3 | 0.960987 | 0.229796 | +0.000383 | +0.000390 |
+| 0.8 | 0.2 | 0.960906 | 0.229910 | +0.000302 | +0.000309 |
+| 0.9 | 0.1 | 0.960785 | 0.230128 | +0.000182 | +0.000189 |
+| 1.0 | 0.0 | 0.960604 | 0.232012 | 0.000000 | +0.000007 |
+
+A 500-resample paired stratified bootstrap with seed 42 estimates the 50/50 AUC gain over LightGBM at 0.000440 (95% CI 0.000390–0.000487) and over XGBoost at 0.000449 (95% CI 0.000409–0.000488). The blend beat each model in 100% of bootstrap samples. Because the improvement spans a broad range and the optimum is flat, the robust 50/50 blend—not a finely selected weight—was fitted and written to `submissions/submission_03_blend.csv`. It has not been submitted.
 
 ## Reconnaissance notes
 
@@ -61,14 +85,17 @@ Native split-count importance for the fitted LightGBM is reconnaissance only: no
 | EXP-000 | 2026-08-26 | 5-fold stratified CV, seed 42 | Constant prevalence | ROC AUC 0.500000 | — | Complete |
 | EXP-001 | 2026-08-26 | 5-fold stratified CV, seed 42 | Untuned logistic pipeline | ROC AUC 0.913785 | `submission_01_baseline.csv` | Complete |
 | EXP-002 | 2026-08-26 | Same 5 folds as EXP-001 | Five untuned model families; LightGBM champion | ROC AUC 0.960604 | `submission_02_model.csv` | Complete |
+| EXP-003 | 2026-08-26 | Same 5 folds as EXP-002 | Paired LightGBM/XGBoost weight grid; 50/50 blend | ROC AUC 0.961044 | `submission_03_blend.csv` | Complete |
 
 ## Reproducing
 
 ```bash
 uv run python -m kaggle_smartphone_addiction.run_baseline
 uv run compare-models
+uv run evaluate-blend
 uv run jupyter nbconvert --to notebook --execute notebooks/01_reconnaissance.ipynb --output 01_reconnaissance.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/02_model_comparison.ipynb --output 02_model_comparison.ipynb
+uv run jupyter nbconvert --to notebook --execute notebooks/03_blending.ipynb --output 03_blending.ipynb
 ```
 
-Detailed results are written to `reports/baseline_metrics.json`, `reports/model_comparison.csv`, and `reports/feature_importance.csv`. Reusable loaders, schema definitions, CV, evaluation, model comparison, final fitting, and submission validation live under `src/kaggle_smartphone_addiction/`.
+Detailed results are written under `reports/`, including complete Experiment 3 OOF predictions, blend scores, diversity statistics, and bootstrap samples. Reusable loaders, schema definitions, CV, evaluation, model comparison, blending, final fitting, and submission validation live under `src/kaggle_smartphone_addiction/`.
