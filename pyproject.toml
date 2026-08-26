@@ -1,7 +1,7 @@
 [project]
 name = "kaggle-smartphone-addiction"
 version = "0.1.0"
-description = "Add your description here"
+description = "Reusable experimentation infrastructure for Kaggle Playground Series S6E8"
 readme = "README.md"
 authors = [
     { name = "Jeremy Betz", email = "jeremy@betz.mx" }
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-kaggle-smartphone-addiction = "kaggle_smartphone_addiction:main"
+kaggle-smartphone-addiction = "kaggle_smartphone_addiction.run_baseline:main"
 
 [build-system]
 requires = ["uv_build>=0.12.6,<0.13.0"]

@@ -1,0 +1,45 @@
+{
+  "validation": "5-fold StratifiedKFold(shuffle=True, random_state=42)",
+  "trivial_constant_prevalence": {
+    "roc_auc": 0.5,
+    "log_loss": 0.6026663104750328,
+    "accuracy_0.5": 0.7094243450313797
+  },
+  "logistic_regression_oof": {
+    "roc_auc": 0.9137848668196702,
+    "log_loss": 0.3383470318304913,
+    "accuracy_0.5": 0.8422853787196128
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "roc_auc": 0.9127332225854925,
+      "log_loss": 0.3401386496030183,
+      "accuracy_0.5": 0.8414814064827806
+    },
+    {
+      "fold": 2,
+      "roc_auc": 0.9130809153478776,
+      "log_loss": 0.33982624281726936,
+      "accuracy_0.5": 0.8416405108697225
+    },
+    {
+      "fold": 3,
+      "roc_auc": 0.9144528545681161,
+      "log_loss": 0.3372715543072842,
+      "accuracy_0.5": 0.8422118402591955
+    },
+    {
+      "fold": 4,
+      "roc_auc": 0.9147328856433367,
+      "log_loss": 0.3361719607746531,
+      "accuracy_0.5": 0.843282178862259
+    },
+    {
+      "fold": 5,
+      "roc_auc": 0.9139327631242995,
+      "log_loss": 0.3383267515035639,
+      "accuracy_0.5": 0.8428109609251264
+    }
+  ]
+}
