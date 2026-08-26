@@ -1,0 +1,81 @@
+{
+  "selected_schedule": "lr_002_max_5000",
+  "full_fit_lightgbm_rounds": 3808,
+  "full_fit_xgboost_rounds": 4720,
+  "recommended_blend": {
+    "lightgbm_weight": 0.4,
+    "xgboost_weight": 0.6,
+    "oof_auc": 0.9642892514216848,
+    "delta_vs_e5_blend": 0.0003458756022116649
+  },
+  "bootstrap_vs_e5_blend": {
+    "mean": 0.0003466170546687708,
+    "ci_95_lower": 0.0003081752385138886,
+    "ci_95_upper": 0.0003873291142884538,
+    "proportion_positive": 1.0,
+    "n_resamples": 500,
+    "seed": 42
+  },
+  "prediction_diversity": {
+    "lightgbm_e5_vs_e6": {
+      "pearson_correlation": 0.998285084709527,
+      "spearman_correlation": 0.9977986696334225,
+      "mean_absolute_probability_difference": 0.010476438217803245,
+      "absolute_difference_quantiles": {
+        "0.0": 4.179545598503864e-12,
+        "0.25": 0.00011233405753219294,
+        "0.5": 0.002400763703988243,
+        "0.75": 0.012983694619046467,
+        "0.9": 0.031816299615760914,
+        "0.95": 0.047142311329210713,
+        "0.99": 0.08456500997391585,
+        "1.0": 0.9997988207038123
+      },
+      "class_disagreement_rate": 0.010852381289875595,
+      "class_disagreement_rate_y0": 0.018756066601956247,
+      "class_disagreement_rate_y1": 0.007615082552795867,
+      "mean_absolute_difference_y0": 0.01705843993936519,
+      "mean_absolute_difference_y1": 0.007780492589995884
+    },
+    "xgboost_e5_vs_e6": {
+      "pearson_correlation": 0.9973554462885259,
+      "spearman_correlation": 0.9980541498136993,
+      "mean_absolute_probability_difference": 0.013772854179984943,
+      "absolute_difference_quantiles": {
+        "0.0": 0.0,
+        "0.25": 0.0001430511474609375,
+        "0.5": 0.0031882524490357556,
+        "0.75": 0.01761692762374889,
+        "0.9": 0.04237507581710821,
+        "0.95": 0.061735653877258274,
+        "0.99": 0.10729243874549843,
+        "1.0": 0.4157570153474808
+      },
+      "class_disagreement_rate": 0.013985295840571389,
+      "class_disagreement_rate_y0": 0.02465467035018293,
+      "class_disagreement_rate_y1": 0.009615188572686829,
+      "mean_absolute_difference_y0": 0.022417899772632935,
+      "mean_absolute_difference_y1": 0.01023189903387115
+    },
+    "blend_e5_vs_e6": {
+      "pearson_correlation": 0.998602455708159,
+      "spearman_correlation": 0.998664646143909,
+      "mean_absolute_probability_difference": 0.01006480586929568,
+      "absolute_difference_quantiles": {
+        "0.0": 1.6211365583274073e-11,
+        "0.25": 0.00011815960179251128,
+        "0.5": 0.0025462824668941453,
+        "0.75": 0.0129923948316778,
+        "0.9": 0.030712132043056867,
+        "0.95": 0.04455271082879152,
+        "0.99": 0.07691573051131245,
+        "1.0": 0.5000250031649032
+      },
+      "class_disagreement_rate": 0.010159553002810367,
+      "class_disagreement_rate_y0": 0.0178252320864133,
+      "class_disagreement_rate_y1": 0.007019740088159617,
+      "mean_absolute_difference_y0": 0.016318382651018936,
+      "mean_absolute_difference_y1": 0.00750338098731561
+    }
+  }
+}

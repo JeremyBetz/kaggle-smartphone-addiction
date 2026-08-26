@@ -109,6 +109,33 @@ The tuned-pair weight curve is flat near its optimum: LightGBM weights 0.3, 0.4,
 
 A 500-resample paired stratified bootstrap with seed 42 estimates the tuned 50/50 gain over E4 at 0.002618 (95% CI 0.002547–0.002704), positive in every resample. Both selected candidates are supported by neighboring improvements and the final blend is simple, so `submissions/submission_05_tuned.csv` was generated and validated locally. It has not been submitted.
 
+The Experiment 5 tuned blend achieved a public Kaggle ROC AUC of **0.96527**. This score is recorded for context only and was not used to select Experiment 6 schedules.
+
+## Boosting-round convergence
+
+Experiment 6 retains the E4 feature set and E5 tree structures, changing only learning rate and maximum rounds. Each schedule uses fold-local AUC early stopping with 150-round patience.
+
+| Family | Learning rate / cap | OOF AUC | Δ vs E5 component | Mean best round | Median | Full stopping windows |
+|---|---|---:|---:|---:|---:|---:|
+| LightGBM | 0.05 / 2,500 | 0.963321 | +0.000097 | 1,572 | 1,641 | 5/5 |
+| LightGBM | 0.03 / 3,500 | 0.963379 | +0.000156 | 2,629 | 2,730 | 5/5 |
+| LightGBM | **0.02 / 5,000** | **0.963424** | **+0.000201** | 3,893 | 3,808 | 5/5 |
+| XGBoost | 0.05 / 2,500 | 0.963930 | +0.000226 | 1,796 | 1,822 | 5/5 |
+| XGBoost | 0.03 / 3,500 | 0.963955 | +0.000250 | 2,836 | 2,888 | 5/5 |
+| XGBoost | **0.02 / 5,000** | **0.963991** | **+0.000286** | 4,632 | 4,720 | 4/5 |
+
+All LightGBM folds and the 0.05/0.03 XGBoost folds genuinely converged before their caps. One 0.02 XGBoost fold found its best round at 4,944, leaving only 56 of the required 150 patience rounds before the 5,000 cap; it remains partially cap-limited. Nevertheless, OOF AUC improves monotonically across all three schedules in both families, so the 0.02 schedules are selected. Full-data fits use the median fold-best rounds: 3,808 LightGBM and 4,720 XGBoost.
+
+The E6 blend peaks broadly at 40% LightGBM / 60% XGBoost:
+
+| LightGBM weight | XGBoost weight | OOF AUC | Δ vs E5 blend |
+|---:|---:|---:|---:|
+| 0.3 | 0.7 | 0.964280 | +0.000337 |
+| **0.4** | **0.6** | **0.964289** | **+0.000346** |
+| 0.5 | 0.5 | 0.964256 | +0.000312 |
+
+A 500-resample paired stratified bootstrap with seed 42 estimates the proposed 40/60 gain over E5 at 0.000347 (95% CI 0.000308–0.000387), positive in every resample. E5/E6 rankings remain very similar (Spearman 0.997799 LightGBM, 0.998054 XGBoost, 0.998665 blend), but the change is not calibration-only: AUC improves and threshold classes change for about 1.02% of blend observations. `submissions/submission_06_convergence.csv` was generated from the median-round full fits and validated after numerical clipping to `[0,1]`. It has not been submitted.
+
 ## Reconnaissance notes
 
 - No full duplicate rows, duplicate IDs, or duplicate feature rows occur within train or test.
@@ -129,6 +156,7 @@ A 500-resample paired stratified bootstrap with seed 42 estimates the tuned 50/5
 | EXP-003 | 2026-08-26 | Same 5 folds as EXP-002 | Paired LightGBM/XGBoost weight grid; 50/50 blend | ROC AUC 0.961044 | `submission_03_blend.csv` | Complete |
 | EXP-004 | 2026-08-26 | Same 5 folds as EXP-003 | Ablations, missingness, 8 conservative candidates; leisure-screen proxy selected | ROC AUC 0.961326 | `submission_04_features.csv` | Complete |
 | EXP-005 | 2026-08-26 | Same 5 folds as EXP-004 | 8 LightGBM and 9 XGBoost conservative candidates; tuned 50/50 blend | ROC AUC 0.963943 | `submission_05_tuned.csv` | Complete |
+| EXP-006 | 2026-08-26 | Same 5 folds as EXP-005 | 3 rate/round schedules per family; median-round 40/60 blend | ROC AUC 0.964289 | `submission_06_convergence.csv` | Complete |
 
 ## Reproducing
 
@@ -138,11 +166,13 @@ uv run compare-models
 uv run evaluate-blend
 uv run diagnose-features
 uv run tune-boosters
+uv run analyze-convergence
 uv run jupyter nbconvert --to notebook --execute notebooks/01_reconnaissance.ipynb --output 01_reconnaissance.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/02_model_comparison.ipynb --output 02_model_comparison.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/03_blending.ipynb --output 03_blending.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/04_feature_diagnostics.ipynb --output 04_feature_diagnostics.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/05_boosting_tuning.ipynb --output 05_boosting_tuning.ipynb
+uv run jupyter nbconvert --to notebook --execute notebooks/06_convergence.ipynb --output 06_convergence.ipynb
 ```
 
 Detailed results are written under `reports/`, including complete Experiment 3 OOF predictions, blend scores, diversity statistics, and bootstrap samples. Reusable loaders, schema definitions, CV, evaluation, model comparison, blending, final fitting, and submission validation live under `src/kaggle_smartphone_addiction/`.

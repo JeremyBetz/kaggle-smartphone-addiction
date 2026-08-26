@@ -27,6 +27,7 @@ compare-models = "kaggle_smartphone_addiction.model_comparison:main"
 evaluate-blend = "kaggle_smartphone_addiction.blending:main"
 diagnose-features = "kaggle_smartphone_addiction.feature_diagnostics:main"
 tune-boosters = "kaggle_smartphone_addiction.boosting_tuning:main"
+analyze-convergence = "kaggle_smartphone_addiction.convergence:main"
 
 [build-system]
 requires = ["uv_build>=0.12.6,<0.13.0"]
