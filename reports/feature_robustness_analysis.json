@@ -1,0 +1,18 @@
+{
+  "selected_features": [
+    "leisure_screen_proxy"
+  ],
+  "missingness_meaningful_features": [
+    "age",
+    "sleep_hours",
+    "app_opens_per_day"
+  ],
+  "bootstrap_vs_current_champion": {
+    "mean": 0.00028226056048639704,
+    "ci_95_lower": 0.00023813180831510906,
+    "ci_95_upper": 0.0003263661440080084,
+    "proportion_positive": 1.0,
+    "n_resamples": 500,
+    "seed": 42
+  }
+}

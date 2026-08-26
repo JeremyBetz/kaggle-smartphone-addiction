@@ -68,6 +68,26 @@ Every interior LightGBM weight from 0.1 through 0.9 beats both individual models
 
 A 500-resample paired stratified bootstrap with seed 42 estimates the 50/50 AUC gain over LightGBM at 0.000440 (95% CI 0.000390–0.000487) and over XGBoost at 0.000449 (95% CI 0.000409–0.000488). The blend beat each model in 100% of bootstrap samples. Because the improvement spans a broad range and the optimum is flat, the robust 50/50 blend—not a finely selected weight—was fitted and written to `submissions/submission_03_blend.csv`. It has not been submitted.
 
+The Experiment 3 blend achieved a public Kaggle ROC AUC of **0.96236**. This score is recorded for context only and was not used for Experiment 4 feature selection.
+
+## Feature diagnostics and conservative engineering
+
+Experiment 4 used unchanged LightGBM and XGBoost configurations and the exact existing folds. Leave-one-feature-out LightGBM ablations identify daily screen time (-0.011386 AUC), weekend screen time (-0.010317), notifications per day (-0.008683), app opens per day (-0.007472), and social media hours (-0.007145) as the largest marginal contributors. Dropping gender (+0.000026) or stress level (+0.000055) produced tiny apparent gains that are too small to justify removing them without cross-model confirmation.
+
+Missingness target-rate differences are modest. Using a predeclared absolute difference threshold of 0.003 selected age, sleep hours, and app opens per day. Explicit indicators for these features reproduce the native-missing control exactly; indicators for all 12 features slightly reduce AUC by 0.000009. This suggests native tree missing-value handling is sufficient, despite train/test missing-rate shifts as large as 3.38 percentage points.
+
+Eight interpretable features were evaluated individually. The best is `leisure_screen_proxy = daily_screen_time_hours - work_study_hours`, based on the explicit assumption that work/study hours are a component of total daily screen time. It improves LightGBM from 0.960604 to 0.960797. The all-positive three-feature combination reaches only 0.960640, so extra derived columns dilute the strongest feature rather than adding complementary signal.
+
+The single selected feature transfers to unchanged XGBoost and the blend:
+
+| Model | Raw OOF AUC | Engineered OOF AUC | Component gain | Δ vs E3 blend |
+|---|---:|---:|---:|---:|
+| LightGBM | 0.960604 | 0.960797 | +0.000194 | -0.000247 |
+| XGBoost | 0.960596 | 0.960905 | +0.000309 | -0.000139 |
+| 50/50 blend | 0.961044 | **0.961326** | — | **+0.000282** |
+
+A 500-resample paired stratified bootstrap with seed 42 estimates the engineered-blend gain over E3 at 0.000282 (95% CI 0.000238–0.000326), positive in every resample. Because the feature transfers across both models and improves their blend with a positive paired interval, `submissions/submission_04_features.csv` was generated and validated locally. It has not been submitted.
+
 ## Reconnaissance notes
 
 - No full duplicate rows, duplicate IDs, or duplicate feature rows occur within train or test.
@@ -86,6 +106,7 @@ A 500-resample paired stratified bootstrap with seed 42 estimates the 50/50 AUC 
 | EXP-001 | 2026-08-26 | 5-fold stratified CV, seed 42 | Untuned logistic pipeline | ROC AUC 0.913785 | `submission_01_baseline.csv` | Complete |
 | EXP-002 | 2026-08-26 | Same 5 folds as EXP-001 | Five untuned model families; LightGBM champion | ROC AUC 0.960604 | `submission_02_model.csv` | Complete |
 | EXP-003 | 2026-08-26 | Same 5 folds as EXP-002 | Paired LightGBM/XGBoost weight grid; 50/50 blend | ROC AUC 0.961044 | `submission_03_blend.csv` | Complete |
+| EXP-004 | 2026-08-26 | Same 5 folds as EXP-003 | Ablations, missingness, 8 conservative candidates; leisure-screen proxy selected | ROC AUC 0.961326 | `submission_04_features.csv` | Complete |
 
 ## Reproducing
 
@@ -93,9 +114,11 @@ A 500-resample paired stratified bootstrap with seed 42 estimates the 50/50 AUC 
 uv run python -m kaggle_smartphone_addiction.run_baseline
 uv run compare-models
 uv run evaluate-blend
+uv run diagnose-features
 uv run jupyter nbconvert --to notebook --execute notebooks/01_reconnaissance.ipynb --output 01_reconnaissance.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/02_model_comparison.ipynb --output 02_model_comparison.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/03_blending.ipynb --output 03_blending.ipynb
+uv run jupyter nbconvert --to notebook --execute notebooks/04_feature_diagnostics.ipynb --output 04_feature_diagnostics.ipynb
 ```
 
 Detailed results are written under `reports/`, including complete Experiment 3 OOF predictions, blend scores, diversity statistics, and bootstrap samples. Reusable loaders, schema definitions, CV, evaluation, model comparison, blending, final fitting, and submission validation live under `src/kaggle_smartphone_addiction/`.
