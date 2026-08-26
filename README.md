@@ -88,6 +88,27 @@ The single selected feature transfers to unchanged XGBoost and the blend:
 
 A 500-resample paired stratified bootstrap with seed 42 estimates the engineered-blend gain over E3 at 0.000282 (95% CI 0.000238–0.000326), positive in every resample. Because the feature transfers across both models and improves their blend with a positive paired interval, `submissions/submission_04_features.csv` was generated and validated locally. It has not been submitted.
 
+## Conservative boosting tuning
+
+Experiment 5 keeps the exact Experiment 4 feature set and folds. Eight LightGBM and nine XGBoost candidates—including each E4 control—cover slower learning, neighboring capacity, regularization, and row/column sampling patterns. Fold-local early stopping uses the validation fold for candidate evaluation; no leaderboard results enter selection.
+
+Improvement is broad. LightGBM's 0.05/1,200-tree variants range from 0.961325 to 0.963223, with regularized neighbors at 0.963026 and 0.962954. XGBoost depth 7 reaches 0.963705, closely supported by row/column sampling at 0.963672, regularization at 0.963414, and the plain 0.05 learning-rate candidate at 0.963392.
+
+Selected configurations:
+
+- LightGBM: 1,200 estimators, learning rate 0.05, 63 leaves; other parameters unchanged.
+- XGBoost: 1,200 estimators, learning rate 0.05, depth 7; subsample and column sample 1.0, other parameters unchanged.
+
+The tuned-pair weight curve is flat near its optimum: LightGBM weights 0.3, 0.4, and 0.5 score 0.963963, 0.963972, and 0.963943. Although 40/60 is numerically best, its advantage over 50/50 is only 0.000029, so the symmetric 50/50 blend is retained to reduce same-OOF weight-selection sensitivity.
+
+| Model | E4 OOF AUC | Tuned OOF AUC | Gain |
+|---|---:|---:|---:|
+| LightGBM | 0.960797 | 0.963223 | +0.002426 |
+| XGBoost | 0.960905 | 0.963705 | +0.002800 |
+| 50/50 blend | 0.961326 | **0.963943** | **+0.002617** |
+
+A 500-resample paired stratified bootstrap with seed 42 estimates the tuned 50/50 gain over E4 at 0.002618 (95% CI 0.002547–0.002704), positive in every resample. Both selected candidates are supported by neighboring improvements and the final blend is simple, so `submissions/submission_05_tuned.csv` was generated and validated locally. It has not been submitted.
+
 ## Reconnaissance notes
 
 - No full duplicate rows, duplicate IDs, or duplicate feature rows occur within train or test.
@@ -107,6 +128,7 @@ A 500-resample paired stratified bootstrap with seed 42 estimates the engineered
 | EXP-002 | 2026-08-26 | Same 5 folds as EXP-001 | Five untuned model families; LightGBM champion | ROC AUC 0.960604 | `submission_02_model.csv` | Complete |
 | EXP-003 | 2026-08-26 | Same 5 folds as EXP-002 | Paired LightGBM/XGBoost weight grid; 50/50 blend | ROC AUC 0.961044 | `submission_03_blend.csv` | Complete |
 | EXP-004 | 2026-08-26 | Same 5 folds as EXP-003 | Ablations, missingness, 8 conservative candidates; leisure-screen proxy selected | ROC AUC 0.961326 | `submission_04_features.csv` | Complete |
+| EXP-005 | 2026-08-26 | Same 5 folds as EXP-004 | 8 LightGBM and 9 XGBoost conservative candidates; tuned 50/50 blend | ROC AUC 0.963943 | `submission_05_tuned.csv` | Complete |
 
 ## Reproducing
 
@@ -115,10 +137,12 @@ uv run python -m kaggle_smartphone_addiction.run_baseline
 uv run compare-models
 uv run evaluate-blend
 uv run diagnose-features
+uv run tune-boosters
 uv run jupyter nbconvert --to notebook --execute notebooks/01_reconnaissance.ipynb --output 01_reconnaissance.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/02_model_comparison.ipynb --output 02_model_comparison.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/03_blending.ipynb --output 03_blending.ipynb
 uv run jupyter nbconvert --to notebook --execute notebooks/04_feature_diagnostics.ipynb --output 04_feature_diagnostics.ipynb
+uv run jupyter nbconvert --to notebook --execute notebooks/05_boosting_tuning.ipynb --output 05_boosting_tuning.ipynb
 ```
 
 Detailed results are written under `reports/`, including complete Experiment 3 OOF predictions, blend scores, diversity statistics, and bootstrap samples. Reusable loaders, schema definitions, CV, evaluation, model comparison, blending, final fitting, and submission validation live under `src/kaggle_smartphone_addiction/`.

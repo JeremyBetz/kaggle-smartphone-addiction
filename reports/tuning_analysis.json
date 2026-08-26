@@ -1,0 +1,38 @@
+{
+  "selected_lightgbm": "wide_leaves_63",
+  "selected_lightgbm_parameters": {
+    "n_estimators": 1200,
+    "learning_rate": 0.05,
+    "num_leaves": 63,
+    "verbosity": -1,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "selected_xgboost": "depth_7",
+  "selected_xgboost_parameters": {
+    "n_estimators": 1200,
+    "learning_rate": 0.05,
+    "max_depth": 7,
+    "subsample": 1.0,
+    "colsample_bytree": 1.0,
+    "tree_method": "hist",
+    "enable_categorical": true,
+    "eval_metric": "logloss",
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "recommended_blend": {
+    "lightgbm_weight": 0.5,
+    "xgboost_weight": 0.5,
+    "oof_auc": 0.9639433758194731,
+    "delta_vs_e4_blend": 0.0026174531780138732
+  },
+  "bootstrap_vs_e4_blend": {
+    "mean": 0.0026183017336856578,
+    "ci_95_lower": 0.0025470126493297384,
+    "ci_95_upper": 0.0027044532487203927,
+    "proportion_positive": 1.0,
+    "n_resamples": 500,
+    "seed": 42
+  }
+}
