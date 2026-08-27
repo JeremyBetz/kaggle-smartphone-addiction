@@ -1,0 +1,46 @@
+{
+  "experiment": 7,
+  "e6_reconstruction": {
+    "lightgbm_oof_auc": 0.9634243185023281,
+    "xgboost_oof_auc": 0.9639908740203345,
+    "blend_oof_auc": 0.9642892514216848,
+    "lightgbm_weight": 0.4,
+    "xgboost_weight": 0.6
+  },
+  "candidate_count": 3,
+  "selected_catboost_for_ensemble_analysis": "catboost_depth7_lr003",
+  "broad_individual_improvement": {
+    "catboost_depth6_lr003": false,
+    "catboost_depth7_lr003": false,
+    "extra_trees_sqrt_leaf2": false
+  },
+  "combined_ensemble_tested": false,
+  "best_proposed_ensemble": {
+    "blend_type": "single_candidate",
+    "candidate": "catboost_depth7_lr003",
+    "family": "CatBoost",
+    "candidate_weight": 0.05,
+    "e6_weight": 0.95,
+    "effective_lightgbm_weight": 0.38,
+    "effective_xgboost_weight": 0.57,
+    "oof_auc": 0.9642915829572603,
+    "log_loss": 0.21871956339557141,
+    "delta_vs_e6": 2.331535575494925e-06
+  },
+  "observed_delta_vs_e6": 2.331535575494925e-06,
+  "paired_bootstrap_vs_e6": {
+    "mean": 2.218292557122803e-06,
+    "ci_95_lower": -2.8742111749663346e-06,
+    "ci_95_upper": 7.821309048741675e-06,
+    "proportion_positive": 0.764,
+    "n_resamples": 500,
+    "seed": 42
+  },
+  "robust_positive_interval": false,
+  "selection_bias_note": "Candidate configuration and coarse weight were selected on these same OOF predictions; the paired interval quantifies sampling uncertainty, not selection bias.",
+  "submission_recommended_by_statistical_rules": false,
+  "ignored_local_artifacts": [
+    "reports/diversity_oof.npz",
+    "reports/diversity_bootstrap_samples.csv"
+  ]
+}

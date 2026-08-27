@@ -16,9 +16,10 @@ OOF AUC is the model-selection score throughout this repository. Public leaderbo
 | E1 | Can a reproducible linear baseline learn useful signal? | Logistic regression | 0.913785 | — |
 | E2 | Which untuned tabular family is strongest? | LightGBM; XGBoost retained for diversity | 0.960604 | 0.96197 each |
 | E3 | Do LightGBM and XGBoost complement one another? | 50/50 probability blend | 0.961044 | 0.96236 |
-| E4 | Do missingness or small interpretable features help? | Blend with one screen/work-study contrast | 0.961326 | — |
+| E4 | Do missingness or small interpretable features help? | Blend with one screen/work-study contrast | 0.961326 | 0.96252 |
 | E5 | Does conservative local tuning transfer to the blend? | Tuned 50/50 blend | 0.963943 | 0.96527 |
 | E6 | Have the boosters converged at 1,200 trees? | 40% LightGBM / 60% XGBoost | **0.964289** | **0.96567** |
+| E7 | Can different tree families add complementary ranking signal? | No promotion; E6 retained | **0.964289** | — |
 
 An em dash means no public score is recorded for that experiment. It does not represent a zero or failed submission.
 
@@ -99,6 +100,7 @@ Public Kaggle scores were never used to choose features, hyperparameters, boosti
 - CatBoost and HistGradientBoosting as standalone replacements for LightGBM/XGBoost.
 - Fragile, fine-grained blend-weight optimization; simple weights captured the gain.
 - Several regularization and shallow-tree candidates, including XGBoost depth 4.
+- CatBoost and ExtraTrees diversity additions: only one isolated 5% CatBoost weight was microscopically positive, with a bootstrap interval crossing zero.
 
 Negative results remain in the reports and notebooks because they constrain the next useful experiment just as much as promoted results do.
 
@@ -113,6 +115,7 @@ notebooks/03_blending.ipynb         Prediction diversity and blending
 notebooks/04_feature_diagnostics.ipynb Ablations and feature engineering
 notebooks/05_boosting_tuning.ipynb  Conservative parameter search
 notebooks/06_convergence.ipynb      Learning-rate/round convergence
+notebooks/07_ensemble_diversity.ipynb Complementary-family ensemble diagnostics
 reports/                            Tracked summary metrics and diagnostics; large caches are ignored
 assets/                             Static portfolio figures used by the README
 src/kaggle_smartphone_addiction/    Reusable data, CV, modeling, and submission code
@@ -143,8 +146,9 @@ uv run evaluate-blend
 uv run diagnose-features
 uv run tune-boosters
 uv run analyze-convergence
+uv run evaluate-diversity
 ```
 
-E5 and E6 are intentionally expensive; their saved reports should be used for review unless reproduction is required. Submission generation includes local schema, row-count, ID-order, missing-value, and probability-range checks. Nothing in this repository automatically submits to Kaggle.
+E5–E7 are intentionally expensive; their saved reports should be used for review unless reproduction is required. Submission generation includes local schema, row-count, ID-order, missing-value, and probability-range checks. Nothing in this repository automatically submits to Kaggle.
 
 CI validates every notebook's structure and executes only the report-driven summary notebook; it deliberately does not run modeling notebooks 01–06. The project is available under the [MIT License](LICENSE).
