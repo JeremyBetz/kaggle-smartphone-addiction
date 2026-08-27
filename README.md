@@ -20,6 +20,7 @@ OOF AUC is the model-selection score throughout this repository. Public leaderbo
 | E5 | Does conservative local tuning transfer to the blend? | Tuned 50/50 blend | 0.963943 | 0.96527 |
 | E6 | Have the boosters converged at 1,200 trees? | 40% LightGBM / 60% XGBoost | **0.964289** | **0.96567** |
 | E7 | Can different tree families add complementary ranking signal? | No promotion; E6 retained | **0.964289** | — |
+| E8 | Do the E4→E5→E6 decisions survive alternative fold assignments? | Repeated-CV confirmation; E6 retained | **0.964289** | — |
 
 An em dash means no public score is recorded for that experiment. It does not represent a zero or failed submission.
 
@@ -48,6 +49,7 @@ Each experiment changes one modeling dimension while holding the data split and 
 4. Diagnose feature contribution, missingness, and a small feature set.
 5. Tune LightGBM and XGBoost conservatively around supported regions.
 6. Test lower learning rates and longer boosting schedules with early stopping.
+7. Challenge the final decisions with complementary model families and repeated CV splits.
 
 Experiment commands generate complete OOF predictions and paired bootstrap samples locally. These large intermediates are ignored by Git; compact result tables and analysis summaries remain tracked for review.
 
@@ -78,9 +80,13 @@ LightGBM and XGBoost predictions are highly correlated but not identical. Their 
 
 A paired 500-resample bootstrap estimated the gain over the E5 blend at +0.000347, with a 95% interval of [0.000308, 0.000387]. The broad weight plateau and paired improvement support the ensemble; the selected decimal weight should not be interpreted as a precisely optimized constant.
 
+Experiment 8 then repeated the fixed E4, E5, and E6 configurations across five additional shuffled stratified split seeds (25 new folds). E6 beat E5 on all five seeds by a mean +0.000327 AUC; a seed-level bootstrap interval was [+0.000320, +0.000335]. The 40/60 blend also beat the predeclared 30/70 and 50/50 alternatives on every seed, although by only about 0.00002 AUC. These results strengthen the ranking of the decisions while preserving the practical conclusion that the blend-weight region is flat.
+
 ## Validation
 
-Every experiment uses the same precomputed five-fold `StratifiedKFold` split with shuffling and `random_state=42`. Model scores are calculated from complete OOF probabilities, and paired bootstrap resampling is used when deciding whether a small improvement is credible.
+Experiments E1–E7 use the same precomputed five-fold `StratifiedKFold` split with shuffling and `random_state=42`. Model scores are calculated from complete OOF probabilities, and paired bootstrap resampling is used when deciding whether a small improvement is credible.
+
+E8 is a confirmation exercise rather than another selection loop: the fixed historical configurations were evaluated on five additional split seeds without changing features, parameters, round counts, or weights. Its uncertainty analysis treats the five seeds—not the 25 constituent folds—as the independent paired units. Five seeds remain a small sample, so the narrow interval should be read as supportive evidence under these particular repeated splits rather than a universal guarantee.
 
 Public Kaggle scores were never used to choose features, hyperparameters, boosting schedules, or blend weights. They were recorded only after the relevant OOF decision. This separation reduces the risk of adapting the workflow to leaderboard noise and makes the local experiment history interpretable.
 
@@ -101,6 +107,7 @@ Public Kaggle scores were never used to choose features, hyperparameters, boosti
 - Fragile, fine-grained blend-weight optimization; simple weights captured the gain.
 - Several regularization and shallow-tree candidates, including XGBoost depth 4.
 - CatBoost and ExtraTrees diversity additions: only one isolated 5% CatBoost weight was microscopically positive, with a bootstrap interval crossing zero.
+- Repeated CV did not reveal a reversal of E4→E5→E6 or a better neighboring E6 blend weight; its value was confirmation rather than a new score.
 
 Negative results remain in the reports and notebooks because they constrain the next useful experiment just as much as promoted results do.
 
@@ -116,6 +123,7 @@ notebooks/04_feature_diagnostics.ipynb Ablations and feature engineering
 notebooks/05_boosting_tuning.ipynb  Conservative parameter search
 notebooks/06_convergence.ipynb      Learning-rate/round convergence
 notebooks/07_ensemble_diversity.ipynb Complementary-family ensemble diagnostics
+notebooks/08_repeated_validation.ipynb Repeated-split robustness confirmation
 reports/                            Tracked summary metrics and diagnostics; large caches are ignored
 assets/                             Static portfolio figures used by the README
 src/kaggle_smartphone_addiction/    Reusable data, CV, modeling, and submission code
@@ -147,8 +155,9 @@ uv run diagnose-features
 uv run tune-boosters
 uv run analyze-convergence
 uv run evaluate-diversity
+uv run validate-repeated-cv
 ```
 
-E5–E7 are intentionally expensive; their saved reports should be used for review unless reproduction is required. Submission generation includes local schema, row-count, ID-order, missing-value, and probability-range checks. Nothing in this repository automatically submits to Kaggle.
+E5–E8 are intentionally expensive; their saved reports should be used for review unless reproduction is required. Submission generation includes local schema, row-count, ID-order, missing-value, and probability-range checks. Nothing in this repository automatically submits to Kaggle.
 
 CI validates every notebook's structure and executes only the report-driven summary notebook; it deliberately does not run modeling notebooks 01–06. The project is available under the [MIT License](LICENSE).

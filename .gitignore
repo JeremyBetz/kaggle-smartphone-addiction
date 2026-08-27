@@ -16,3 +16,4 @@ submissions/
 reports/oof_predictions_exp*.csv
 reports/*_oof.npz
 reports/*_bootstrap_samples.csv
+reports/repeated_cv_seed_*_checkpoint.csv

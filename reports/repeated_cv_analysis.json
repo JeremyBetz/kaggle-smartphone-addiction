@@ -1,0 +1,189 @@
+{
+  "experiment": 8,
+  "purpose": "confirmation_only_no_tuning",
+  "fold_seeds": [
+    7,
+    21,
+    84,
+    123,
+    2026
+  ],
+  "n_splits_per_seed": 5,
+  "independent_units_for_inference": "five repeated split seeds, not 25 folds",
+  "configurations": {
+    "e4": {
+      "LightGBM": {
+        "learning_rate": 0.1,
+        "n_estimators": 300,
+        "num_leaves": 31
+      },
+      "XGBoost": {
+        "learning_rate": 0.1,
+        "n_estimators": 300,
+        "max_depth": 6
+      },
+      "lightgbm_weight": 0.5
+    },
+    "e5": {
+      "LightGBM": {
+        "learning_rate": 0.05,
+        "n_estimators": 1200,
+        "num_leaves": 63
+      },
+      "XGBoost": {
+        "learning_rate": 0.05,
+        "n_estimators": 1200,
+        "max_depth": 7
+      },
+      "lightgbm_weight": 0.5
+    },
+    "e6": {
+      "LightGBM": {
+        "learning_rate": 0.02,
+        "n_estimators": 3808,
+        "num_leaves": 63
+      },
+      "XGBoost": {
+        "learning_rate": 0.02,
+        "n_estimators": 4720,
+        "max_depth": 7
+      },
+      "lightgbm_weight": 0.4
+    }
+  },
+  "selected_blend_comparisons": {
+    "e5_minus_e4": {
+      "mean_difference": 0.0026099230087311075,
+      "median_difference": 0.0026026613869611914,
+      "std_difference": 4.816569329092003e-05,
+      "min_difference": 0.0025556387742968756,
+      "max_difference": 0.00268810943323583,
+      "wins": 5,
+      "ties": 0,
+      "losses": 0,
+      "paired_t_ci_95_lower": 0.0025501174014232477,
+      "paired_t_ci_95_upper": 0.0026697286160389674,
+      "seed_bootstrap_ci_95_lower": 0.002574993127815728,
+      "seed_bootstrap_ci_95_upper": 0.002652975074032028,
+      "seed_bootstrap_positive": 1.0,
+      "n_independent_seeds": 5,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 42
+    },
+    "e6_minus_e5": {
+      "mean_difference": 0.00032723806077632477,
+      "median_difference": 0.00032432542292959443,
+      "std_difference": 9.400593592521536e-06,
+      "min_difference": 0.00031864454848462564,
+      "max_difference": 0.00034133285021120674,
+      "wins": 5,
+      "ties": 0,
+      "losses": 0,
+      "paired_t_ci_95_lower": 0.0003155656821507458,
+      "paired_t_ci_95_upper": 0.00033891043940190374,
+      "seed_bootstrap_ci_95_lower": 0.0003203485652171212,
+      "seed_bootstrap_ci_95_upper": 0.0003351772065779635,
+      "seed_bootstrap_positive": 1.0,
+      "n_independent_seeds": 5,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 42
+    },
+    "e6_minus_e4": {
+      "mean_difference": 0.0029371610695074326,
+      "median_difference": 0.0029297133521564156,
+      "std_difference": 5.281776617931537e-05,
+      "min_difference": 0.0028757029273902557,
+      "max_difference": 0.003019932762398647,
+      "wins": 5,
+      "ties": 0,
+      "losses": 0,
+      "paired_t_ci_95_lower": 0.0028715791507770323,
+      "paired_t_ci_95_upper": 0.003002742988237833,
+      "seed_bootstrap_ci_95_lower": 0.0029001584120077694,
+      "seed_bootstrap_ci_95_upper": 0.0029838449983017544,
+      "seed_bootstrap_positive": 1.0,
+      "n_independent_seeds": 5,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 42
+    }
+  },
+  "e6_blend_weight_comparisons": {
+    "weight_04_minus_03": {
+      "mean_difference": 1.987992660683613e-05,
+      "median_difference": 2.0862501371121667e-05,
+      "std_difference": 1.90865962725817e-06,
+      "min_difference": 1.7067609691223673e-05,
+      "max_difference": 2.1771083232757782e-05,
+      "wins": 5,
+      "ties": 0,
+      "losses": 0,
+      "paired_t_ci_95_lower": 1.7510012662844643e-05,
+      "paired_t_ci_95_upper": 2.2249840550827614e-05,
+      "seed_bootstrap_ci_95_lower": 1.835876291265137e-05,
+      "seed_bootstrap_ci_95_upper": 2.1232348160227234e-05,
+      "seed_bootstrap_positive": 1.0,
+      "n_independent_seeds": 5,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 42
+    },
+    "weight_04_minus_05": {
+      "mean_difference": 2.342082821875646e-05,
+      "median_difference": 2.3019436915960867e-05,
+      "std_difference": 1.7697290691969573e-06,
+      "min_difference": 2.147765085136477e-05,
+      "max_difference": 2.5993219279207835e-05,
+      "wins": 5,
+      "ties": 0,
+      "losses": 0,
+      "paired_t_ci_95_lower": 2.122341934695994e-05,
+      "paired_t_ci_95_upper": 2.561823709055298e-05,
+      "seed_bootstrap_ci_95_lower": 2.2122993024709102e-05,
+      "seed_bootstrap_ci_95_upper": 2.491869837697447e-05,
+      "seed_bootstrap_positive": 1.0,
+      "n_independent_seeds": 5,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 42
+    }
+  },
+  "original_seed42_context": {
+    "e5_minus_e4": {
+      "original_seed42_difference": 0.002617453178013762,
+      "additional_seed_mean": 0.0026099230087311075,
+      "additional_seed_median": 0.0026026613869611914,
+      "original_minus_additional_mean": 7.530169282654684e-06,
+      "original_percentile_among_additional_seeds": 0.8
+    },
+    "e6_minus_e5": {
+      "original_seed42_difference": 0.0003458756022116649,
+      "additional_seed_mean": 0.00032723806077632477,
+      "additional_seed_median": 0.00032432542292959443,
+      "original_minus_additional_mean": 1.8637541435340143e-05,
+      "original_percentile_among_additional_seeds": 1.0
+    },
+    "e6_minus_e4": {
+      "original_seed42_difference": 0.002963328780225427,
+      "additional_seed_mean": 0.0029371610695074326,
+      "additional_seed_median": 0.0029297133521564156,
+      "original_minus_additional_mean": 2.6167710717994556e-05,
+      "original_percentile_among_additional_seeds": 0.8
+    }
+  },
+  "limitations": [
+    "Five seeds provide a small paired sample. Bootstrap intervals are discrete, and t intervals rely on an approximate normality assumption.",
+    "The original seed-42 E6 score used fold-local early stopping to choose the reported full-data round counts. E8 applies those fixed deployed round counts to every new fold, so the seed-42 context is informative but not a perfectly identical procedural replicate."
+  ],
+  "decision_rule": "E6 remains champion unless repeated validation gives meaningful evidence against it.",
+  "ignored_local_artifacts": [
+    "reports/repeated_cv_seed_7_oof.npz",
+    "reports/repeated_cv_seed_21_oof.npz",
+    "reports/repeated_cv_seed_84_oof.npz",
+    "reports/repeated_cv_seed_123_oof.npz",
+    "reports/repeated_cv_seed_2026_oof.npz",
+    "reports/repeated_cv_seed_7_checkpoint.csv",
+    "reports/repeated_cv_seed_21_checkpoint.csv",
+    "reports/repeated_cv_seed_84_checkpoint.csv",
+    "reports/repeated_cv_seed_123_checkpoint.csv",
+    "reports/repeated_cv_seed_2026_checkpoint.csv",
+    "reports/repeated_cv_bootstrap_samples.csv"
+  ]
+}
