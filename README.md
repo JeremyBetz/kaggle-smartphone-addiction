@@ -7,6 +7,8 @@ This project develops a reproducible solution for a large tabular binary-classif
 
 OOF AUC is the model-selection score throughout this repository. Public leaderboard scores are reported separately and only after an experiment was complete.
 
+![Experiment progression showing OOF and available public ROC AUC scores](assets/experiment-progression.png)
+
 ## Experiment progression
 
 | Experiment | Question answered | Promoted model | OOF AUC | Public AUC |
@@ -41,12 +43,12 @@ Each experiment changes one modeling dimension while holding the data split and 
 
 1. Establish a trivial and linear baseline.
 2. Compare strong tabular model families without tuning.
-3. measure prediction diversity and test simple probability blends.
+3. Measure prediction diversity and test simple probability blends.
 4. Diagnose feature contribution, missingness, and a small feature set.
 5. Tune LightGBM and XGBoost conservatively around supported regions.
 6. Test lower learning rates and longer boosting schedules with early stopping.
 
-Complete OOF predictions and compact reports are saved so later comparisons can be paired and reproducible.
+Experiment commands generate complete OOF predictions and paired bootstrap samples locally. These large intermediates are ignored by Git; compact result tables and analysis summaries remain tracked for review.
 
 ## Feature engineering
 
@@ -111,10 +113,12 @@ notebooks/03_blending.ipynb         Prediction diversity and blending
 notebooks/04_feature_diagnostics.ipynb Ablations and feature engineering
 notebooks/05_boosting_tuning.ipynb  Conservative parameter search
 notebooks/06_convergence.ipynb      Learning-rate/round convergence
-reports/                            Saved metrics, OOF predictions, and diagnostics
+reports/                            Tracked summary metrics and diagnostics; large caches are ignored
+assets/                             Static portfolio figures used by the README
 src/kaggle_smartphone_addiction/    Reusable data, CV, modeling, and submission code
 submissions/                        Locally validated submission files
 pyproject.toml, uv.lock             Reproducible Python environment
+.github/workflows/ci.yml            Lightweight notebook validation and summary execution
 ```
 
 ## Reproduction/setup
@@ -123,8 +127,12 @@ The environment is managed with [uv](https://docs.astral.sh/uv/) and currently t
 
 ```bash
 uv sync
+uv run kaggle competitions download -c playground-series-s6e8 -p data/raw
+unzip data/raw/playground-series-s6e8.zip -d data/raw
 uv run jupyter lab
 ```
+
+The competition data is intentionally ignored by Git. The download command requires Kaggle API credentials configured on the local machine.
 
 The numbered notebooks can be read from saved outputs without retraining. The reusable experiment entry points are:
 
@@ -138,3 +146,5 @@ uv run analyze-convergence
 ```
 
 E5 and E6 are intentionally expensive; their saved reports should be used for review unless reproduction is required. Submission generation includes local schema, row-count, ID-order, missing-value, and probability-range checks. Nothing in this repository automatically submits to Kaggle.
+
+CI validates every notebook's structure and executes only the report-driven summary notebook; it deliberately does not run modeling notebooks 01–06. The project is available under the [MIT License](LICENSE).

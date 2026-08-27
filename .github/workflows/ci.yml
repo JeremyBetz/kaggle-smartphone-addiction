@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  presentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Validate notebook structure
+        run: |
+          uv run python - <<'PY'
+          from pathlib import Path
+          import nbformat
+
+          notebooks = sorted(Path("notebooks").glob("*.ipynb"))
+          if not notebooks:
+              raise SystemExit("No notebooks found")
+
+          for path in notebooks:
+              notebook = nbformat.read(path, as_version=4)
+              nbformat.validate(notebook)
+              errors = [
+                  output
+                  for cell in notebook.cells
+                  if cell.cell_type == "code"
+                  for output in cell.get("outputs", [])
+                  if output.get("output_type") == "error"
+              ]
+              if errors:
+                  raise RuntimeError(f"Saved error output found in {path}")
+              print(f"validated {path}")
+          PY
+
+      - name: Execute portfolio summary only
+        run: |
+          uv run jupyter nbconvert \
+            --to notebook \
+            --execute notebooks/00_project_summary.ipynb \
+            --output 00_project_summary.ipynb \
+            --output-dir /tmp \
+            --ExecutePreprocessor.timeout=120

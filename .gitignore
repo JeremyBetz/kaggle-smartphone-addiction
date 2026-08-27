@@ -11,6 +11,8 @@ wheels/
 data/
 submissions/
 *.zip
-data/
-submissions/
-*.zip
+
+# Regenerable experiment intermediates; compact summary reports remain tracked.
+reports/oof_predictions_exp*.csv
+reports/*_oof.npz
+reports/*_bootstrap_samples.csv
