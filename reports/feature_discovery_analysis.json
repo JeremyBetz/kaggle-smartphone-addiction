@@ -1,0 +1,371 @@
+{
+  "experiment": 9,
+  "purpose": "targeted_feature_discovery",
+  "predeclared_candidates": {
+    "social_media_screen_share": {
+      "family": "composition",
+      "hypothesis": "Social-media share may be more informative than absolute hours."
+    },
+    "gaming_screen_share": {
+      "family": "composition",
+      "hypothesis": "Gaming share may distinguish screen-time composition."
+    },
+    "work_study_screen_share": {
+      "family": "composition",
+      "hypothesis": "Work/study share may complement the existing difference feature."
+    },
+    "unallocated_screen_contrast": {
+      "family": "composition",
+      "hypothesis": "Total screen time not represented by three named activities may add signal."
+    },
+    "leisure_productive_balance": {
+      "family": "composition",
+      "hypothesis": "A bounded relative screen/work-study contrast may add scale invariance."
+    },
+    "weekend_relative_deviation": {
+      "family": "weekday_weekend",
+      "hypothesis": "A bounded weekend deviation may be stabler than E4's ratio or raw gap."
+    },
+    "joint_engagement_intensity": {
+      "family": "engagement",
+      "hypothesis": "The geometric mean of notifications and opens may capture joint intensity."
+    },
+    "social_engagement_load": {
+      "family": "interaction",
+      "hypothesis": "Social-media hours and app opens may jointly represent engagement load."
+    },
+    "cross_context_screen_load": {
+      "family": "weekday_weekend",
+      "hypothesis": "Weekday-like and weekend screen levels may interact across contexts."
+    },
+    "screen_sleep_balance": {
+      "family": "balance",
+      "hypothesis": "The difference between screen and sleep hours may expose a behavioral balance."
+    }
+  },
+  "development_configuration": "fixed E4 LightGBM and XGBoost; seed 42",
+  "development_gate": {
+    "minimum_blend_auc_gain": 5e-05,
+    "both_components_must_improve": true,
+    "minimum_positive_fold_deltas": 3
+  },
+  "credible_individuals": [
+    "unallocated_screen_contrast"
+  ],
+  "tested_packages": [
+    {
+      "name": "best_individual",
+      "features": [
+        "unallocated_screen_contrast"
+      ]
+    }
+  ],
+  "selected_for_e6_confirmation": [
+    "unallocated_screen_contrast"
+  ],
+  "confirmation_reached": true,
+  "submission_created": true,
+  "seed42_confirmation_gate_passed": true,
+  "repeated_seed_comparison": {
+    "mean_difference": 0.000524654962260307,
+    "median_difference": 0.0005281689390941313,
+    "std_difference": 1.9259744841621455e-05,
+    "min_difference": 0.0004936802267054841,
+    "max_difference": 0.0005467412308217678,
+    "wins": 5,
+    "ties": 0,
+    "losses": 0,
+    "paired_t_ci_95_lower": 0.000500740830475875,
+    "paired_t_ci_95_upper": 0.000548569094044739,
+    "seed_bootstrap_ci_95_lower": 0.0005077513410094881,
+    "seed_bootstrap_ci_95_upper": 0.000538705992080546,
+    "seed_bootstrap_positive": 1.0,
+    "n_independent_seeds": 5,
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 42
+  },
+  "seed42_context": {
+    "difference": 0.00048542866010936603,
+    "additional_seed_mean": 0.000524654962260307,
+    "difference_minus_additional_mean": -3.922630215094094e-05,
+    "percentile_among_additional_seeds": 0.0
+  },
+  "promotion_passed": true,
+  "champion": "E9",
+  "public_kaggle_auc": 0.96621,
+  "public_gain_over_e6": 0.00054,
+  "repeated_validation_estimated_gain": 0.000524654962260307,
+  "public_score_role": "Recorded after local promotion; one holdout, not statistical confirmation.",
+  "limitations": [
+    "Candidates and limited packages share the development folds, so selection bias remains.",
+    "Five confirmation seeds are a small independent paired sample; their 25 folds are not independent.",
+    "Engineered quantities are predictive representations, not causal or literal behavioral measurements."
+  ],
+  "selected_feature_definition": "daily_screen_time_hours - social_media_hours - gaming_hours - work_study_hours",
+  "development_screen_results": [
+    {
+      "name": "social_media_screen_share",
+      "model": "LightGBM",
+      "oof_auc": 0.960736435666522,
+      "delta_vs_control": -6.0913494351666486e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "social_media_screen_share",
+      "model": "XGBoost",
+      "oof_auc": 0.9608182971608474,
+      "delta_vs_control": -8.664433151706064e-05,
+      "positive_fold_deltas": 1
+    },
+    {
+      "name": "social_media_screen_share",
+      "model": "Blend50_50",
+      "oof_auc": 0.9612262469152756,
+      "delta_vs_control": -9.967572618363452e-05,
+      "positive_fold_deltas": 1
+    },
+    {
+      "name": "gaming_screen_share",
+      "model": "LightGBM",
+      "oof_auc": 0.960929317357582,
+      "delta_vs_control": 0.0001319681967083,
+      "positive_fold_deltas": 4
+    },
+    {
+      "name": "gaming_screen_share",
+      "model": "XGBoost",
+      "oof_auc": 0.9609694943378198,
+      "delta_vs_control": 6.455284545525686e-05,
+      "positive_fold_deltas": 4
+    },
+    {
+      "name": "gaming_screen_share",
+      "model": "Blend50_50",
+      "oof_auc": 0.9613748313383774,
+      "delta_vs_control": 4.890869691809296e-05,
+      "positive_fold_deltas": 4
+    },
+    {
+      "name": "work_study_screen_share",
+      "model": "LightGBM",
+      "oof_auc": 0.9608782187770256,
+      "delta_vs_control": 8.086961615205723e-05,
+      "positive_fold_deltas": 4
+    },
+    {
+      "name": "work_study_screen_share",
+      "model": "XGBoost",
+      "oof_auc": 0.9608838880107922,
+      "delta_vs_control": -2.1053481572330668e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "work_study_screen_share",
+      "model": "Blend50_50",
+      "oof_auc": 0.961349476570233,
+      "delta_vs_control": 2.3553928773623056e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "unallocated_screen_contrast",
+      "model": "LightGBM",
+      "oof_auc": 0.9612592415409804,
+      "delta_vs_control": 0.0004618923801066,
+      "positive_fold_deltas": 5
+    },
+    {
+      "name": "unallocated_screen_contrast",
+      "model": "XGBoost",
+      "oof_auc": 0.9614857101165972,
+      "delta_vs_control": 0.0005807686242326,
+      "positive_fold_deltas": 5
+    },
+    {
+      "name": "unallocated_screen_contrast",
+      "model": "Blend50_50",
+      "oof_auc": 0.9618699311493936,
+      "delta_vs_control": 0.0005440085079343,
+      "positive_fold_deltas": 5
+    },
+    {
+      "name": "leisure_productive_balance",
+      "model": "LightGBM",
+      "oof_auc": 0.960750262605667,
+      "delta_vs_control": -4.708655520668792e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "leisure_productive_balance",
+      "model": "XGBoost",
+      "oof_auc": 0.9608752251233036,
+      "delta_vs_control": -2.9716369061016937e-05,
+      "positive_fold_deltas": 1
+    },
+    {
+      "name": "leisure_productive_balance",
+      "model": "Blend50_50",
+      "oof_auc": 0.9612910710433464,
+      "delta_vs_control": -3.485159811278393e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "weekend_relative_deviation",
+      "model": "LightGBM",
+      "oof_auc": 0.9603450108499918,
+      "delta_vs_control": -0.0004523383108818,
+      "positive_fold_deltas": 0
+    },
+    {
+      "name": "weekend_relative_deviation",
+      "model": "XGBoost",
+      "oof_auc": 0.9608346175648164,
+      "delta_vs_control": -7.032392754813266e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "weekend_relative_deviation",
+      "model": "Blend50_50",
+      "oof_auc": 0.9611373972790124,
+      "delta_vs_control": -0.000188525362447,
+      "positive_fold_deltas": 1
+    },
+    {
+      "name": "joint_engagement_intensity",
+      "model": "LightGBM",
+      "oof_auc": 0.9608925853585462,
+      "delta_vs_control": 9.523619767248805e-05,
+      "positive_fold_deltas": 3
+    },
+    {
+      "name": "joint_engagement_intensity",
+      "model": "XGBoost",
+      "oof_auc": 0.9608694940427228,
+      "delta_vs_control": -3.544744964167901e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "joint_engagement_intensity",
+      "model": "Blend50_50",
+      "oof_auc": 0.961349088439358,
+      "delta_vs_control": 2.3165797898738735e-05,
+      "positive_fold_deltas": 3
+    },
+    {
+      "name": "social_engagement_load",
+      "model": "LightGBM",
+      "oof_auc": 0.9607700678198208,
+      "delta_vs_control": -2.728134105300928e-05,
+      "positive_fold_deltas": 3
+    },
+    {
+      "name": "social_engagement_load",
+      "model": "XGBoost",
+      "oof_auc": 0.9607804490369009,
+      "delta_vs_control": -0.0001244924554636,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "social_engagement_load",
+      "model": "Blend50_50",
+      "oof_auc": 0.9612228310509932,
+      "delta_vs_control": -0.000103091590466,
+      "positive_fold_deltas": 3
+    },
+    {
+      "name": "cross_context_screen_load",
+      "model": "LightGBM",
+      "oof_auc": 0.9589427235065936,
+      "delta_vs_control": -0.0018546256542801,
+      "positive_fold_deltas": 0
+    },
+    {
+      "name": "cross_context_screen_load",
+      "model": "XGBoost",
+      "oof_auc": 0.9606809905002054,
+      "delta_vs_control": -0.0002239509921591,
+      "positive_fold_deltas": 0
+    },
+    {
+      "name": "cross_context_screen_load",
+      "model": "Blend50_50",
+      "oof_auc": 0.9604915775639218,
+      "delta_vs_control": -0.0008343450775375,
+      "positive_fold_deltas": 0
+    },
+    {
+      "name": "screen_sleep_balance",
+      "model": "LightGBM",
+      "oof_auc": 0.9610002319759916,
+      "delta_vs_control": 0.000202882815118,
+      "positive_fold_deltas": 4
+    },
+    {
+      "name": "screen_sleep_balance",
+      "model": "XGBoost",
+      "oof_auc": 0.9608444923058136,
+      "delta_vs_control": -6.044918655090381e-05,
+      "positive_fold_deltas": 2
+    },
+    {
+      "name": "screen_sleep_balance",
+      "model": "Blend50_50",
+      "oof_auc": 0.9613432712969164,
+      "delta_vs_control": 1.7348655457216644e-05,
+      "positive_fold_deltas": 2
+    }
+  ],
+  "seed42_confirmation": [
+    {
+      "model": "LightGBM",
+      "oof_auc": 0.9639349438934,
+      "control_auc": 0.9634116689817982,
+      "delta_vs_control": 0.0005232749116017,
+      "positive_fold_deltas": 5
+    },
+    {
+      "model": "XGBoost",
+      "oof_auc": 0.9644766219060116,
+      "control_auc": 0.9639909999111784,
+      "delta_vs_control": 0.0004856219948332,
+      "positive_fold_deltas": 5
+    },
+    {
+      "model": "Blend40_60",
+      "oof_auc": 0.9647766676946864,
+      "control_auc": 0.9642912390345773,
+      "delta_vs_control": 0.0004854286601093,
+      "positive_fold_deltas": 5
+    }
+  ],
+  "repeated_component_differences": [
+    {
+      "model": "Blend40_60",
+      "mean": 0.00052465496226024,
+      "median": 0.0005281689390941,
+      "std": 1.9259744841630142e-05,
+      "min": 0.0004936802267054,
+      "max": 0.0005467412308217
+    },
+    {
+      "model": "LightGBM",
+      "mean": 0.0005440690201805,
+      "median": 0.0005418750313509,
+      "std": 2.6908290686289184e-05,
+      "min": 0.0005149929087417,
+      "max": 0.0005773262664965
+    },
+    {
+      "model": "XGBoost",
+      "mean": 0.00053525745169244,
+      "median": 0.0005414083385811,
+      "std": 2.123233055936351e-05,
+      "min": 0.0005111693314662,
+      "max": 0.0005586098160769
+    }
+  ],
+  "recorded_runtime_seconds": {
+    "development_screen_and_package": 296.3683496338781,
+    "candidate_confirmation_oof": 2766.491629872966,
+    "recorded_total": 3062.859979506844
+  }
+}

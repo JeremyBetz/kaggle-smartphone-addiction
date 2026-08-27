@@ -1,0 +1,11 @@
+feature,family,hypothesis,train_missing_rate,test_missing_rate,train_infinite_count,test_infinite_count,train_min,train_median,train_max
+social_media_screen_share,composition,Social-media share may be more informative than absolute hours.,0.2735283184522303,0.23039331492868761,0,0,0.0,0.3302752293577982,0.8853211009174312
+gaming_screen_share,composition,Gaming share may distinguish screen-time composition.,0.2656266046062233,0.2619827068328935,0,0,0.0,0.19852941176470587,0.7995110024449879
+work_study_screen_share,composition,Work/study share may complement the existing difference feature.,0.1995157434018592,0.19071082881654527,0,0,0.0,0.32169576059850374,0.9282178217821783
+unallocated_screen_contrast,composition,Total screen time not represented by three named activities may add signal.,0.39044562310430464,0.3847932177305587,0,0,-1.1102230246251565e-15,0.7500000000000009,11.53
+leisure_productive_balance,composition,A bounded relative screen/work-study contrast may add scale invariance.,0.1995157434018592,0.19071082881654527,0,0,0.037227214377406934,0.5132075471698113,1.0
+weekend_relative_deviation,weekday_weekend,A bounded weekend deviation may be stabler than E4's ratio or raw gap.,0.2508978562822458,0.23925589432403427,0,0,-0.8425925925925927,0.10743801652892561,0.9067164179104478
+joint_engagement_intensity,engagement,The geometric mean of notifications and opens may capture joint intensity.,0.1783230084079558,0.17013722485842148,0,0,17.320508075688775,114.0,212.13203435596427
+social_engagement_load,interaction,Social-media hours and app opens may jointly represent engagement load.,0.28126080284189775,0.22830760507860223,0,0,0.0,204.24,1314.25
+cross_context_screen_load,weekday_weekend,Weekday-like and weekend screen levels may interact across contexts.,0.2508978562822458,0.23925589432403427,0,0,0.87,73.8832,244.35840000000002
+screen_sleep_balance,balance,The difference between screen and sleep hours may expose a behavioral balance.,0.19095302219220128,0.17473726130771983,0,0,-8.48,0.96,10.440000000000001

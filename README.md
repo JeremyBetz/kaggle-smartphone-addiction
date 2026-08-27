@@ -2,8 +2,8 @@
 
 This project develops a reproducible solution for a large tabular binary-classification problem. The work emphasizes controlled experiments, complete out-of-fold (OOF) predictions, and evidence-based model promotion rather than leaderboard-driven iteration.
 
-> **Current best: 0.964289 OOF ROC AUC · 0.96567 public Kaggle ROC AUC**<br>
-> **Ensemble: 40% LightGBM / 60% XGBoost**, using the original predictors plus one screen/work-study contrast.
+> **Final champion: 0.964777 matched OOF ROC AUC · 0.96621 public Kaggle ROC AUC**<br>
+> **Ensemble: 40% LightGBM / 60% XGBoost**, using the original predictors plus two compact screen-time contrasts.
 
 OOF AUC is the model-selection score throughout this repository. Public leaderboard scores are reported separately and only after an experiment was complete.
 
@@ -21,6 +21,7 @@ OOF AUC is the model-selection score throughout this repository. Public leaderbo
 | E6 | Have the boosters converged at 1,200 trees? | 40% LightGBM / 60% XGBoost | **0.964289** | **0.96567** |
 | E7 | Can different tree families add complementary ranking signal? | No promotion; E6 retained | **0.964289** | — |
 | E8 | Do the E4→E5→E6 decisions survive alternative fold assignments? | Repeated-CV confirmation; E6 retained | **0.964289** | — |
+| E9 | Can targeted behavioral representations transfer across models and splits? | Add one residual screen-time contrast | **0.964777** | **0.96621** |
 
 An em dash means no public score is recorded for that experiment. It does not represent a zero or failed submission.
 
@@ -50,6 +51,7 @@ Each experiment changes one modeling dimension while holding the data split and 
 5. Tune LightGBM and XGBoost conservatively around supported regions.
 6. Test lower learning rates and longer boosting schedules with early stopping.
 7. Challenge the final decisions with complementary model families and repeated CV splits.
+8. Screen a bounded set of behavioral hypotheses, then confirm one frozen feature across models and split seeds.
 
 Experiment commands generate complete OOF predictions and paired bootstrap samples locally. These large intermediates are ignored by Git; compact result tables and analysis summaries remain tracked for review.
 
@@ -60,6 +62,8 @@ Leave-one-feature-out ablations showed that daily and weekend screen time, notif
 Explicit missingness indicators did not improve on native tree handling. Eight conservative derived features were then evaluated individually. Only one transferred across both model families: the difference between `daily_screen_time_hours` and `work_study_hours`. The historical implementation calls this `leisure_screen_proxy`, but the available columns do not establish that the remainder is literally leisure time; “screen/work-study contrast” is the more defensible interpretation.
 
 Combining several weakly positive ratios did not outperform this single feature, so the final feature set remains deliberately small.
+
+E9 predeclared ten new representations after excluding E4's known failures. Only one survived the fixed cross-model screen: `daily_screen_time_hours - social_media_hours - gaming_hours - work_study_hours`. This is described as an unallocated screen-time contrast among recorded variables, not a literal measure of how the remaining time was spent. Added to E6, it improved both model families and the 40/60 blend on every confirmation seed.
 
 ## Model development
 
@@ -82,6 +86,10 @@ A paired 500-resample bootstrap estimated the gain over the E5 blend at +0.00034
 
 Experiment 8 then repeated the fixed E4, E5, and E6 configurations across five additional shuffled stratified split seeds (25 new folds). E6 beat E5 on all five seeds by a mean +0.000327 AUC; a seed-level bootstrap interval was [+0.000320, +0.000335]. The 40/60 blend also beat the predeclared 30/70 and 50/50 alternatives on every seed, although by only about 0.00002 AUC. These results strengthen the ranking of the decisions while preserving the practical conclusion that the blend-weight region is flat.
 
+E9 kept the E6 models and blend fixed while adding one frozen feature. On a matched fixed-round seed-42 comparison, the blend increased from 0.964291 to **0.964777** (+0.000485). Across seeds 7, 21, 84, 123, and 2026, the mean paired gain was +0.000525, with 5/0/0 wins/ties/losses and a seed-bootstrap interval of [+0.000508, +0.000539]. After that local decision, E9 scored **0.96621** publicly, improving on E6's 0.96567 by **+0.00054**.
+
+The repeated-validation estimate (+0.000525) and observed public improvement (+0.00054) are encouragingly consistent. The public leaderboard is still only one holdout, however, so this agreement is supporting external evidence—not statistical confirmation or a substitute for repeated local validation.
+
 ## Validation
 
 Experiments E1–E7 use the same precomputed five-fold `StratifiedKFold` split with shuffling and `random_state=42`. Model scores are calculated from complete OOF probabilities, and paired bootstrap resampling is used when deciding whether a small improvement is credible.
@@ -95,6 +103,7 @@ Public Kaggle scores were never used to choose features, hyperparameters, boosti
 - Moving from a linear model to gradient-boosted trees.
 - Blending LightGBM and XGBoost despite their similar standalone AUCs.
 - Adding one cross-model-robust screen/work-study contrast.
+- Adding one predeclared residual screen-time contrast that transferred across both boosters and all confirmation seeds.
 - Increasing useful tree capacity around the E4 configuration.
 - Lowering learning rates while allowing more boosting rounds with early stopping.
 
@@ -108,8 +117,11 @@ Public Kaggle scores were never used to choose features, hyperparameters, boosti
 - Several regularization and shallow-tree candidates, including XGBoost depth 4.
 - CatBoost and ExtraTrees diversity additions: only one isolated 5% CatBoost weight was microscopically positive, with a bootstrap interval crossing zero.
 - Repeated CV did not reveal a reversal of E4→E5→E6 or a better neighboring E6 blend weight; its value was confirmation rather than a new score.
+- Nine of ten targeted E9 representations failed the fixed development gate; composition shares, bounded weekend deviation, and plausible engagement interactions did not transfer strongly enough.
 
 Negative results remain in the reports and notebooks because they constrain the next useful experiment just as much as promoted results do.
+
+The closing sequence is intentionally conservative: E7 showed that prediction diversity alone did not justify extra ensemble complexity; E8 confirmed that E6's tuning and blend decisions survived alternative splits; E9 then promoted one hypothesis-driven feature only after it improved both components and transferred across those same confirmation seeds.
 
 ## Repository structure
 
@@ -124,6 +136,7 @@ notebooks/05_boosting_tuning.ipynb  Conservative parameter search
 notebooks/06_convergence.ipynb      Learning-rate/round convergence
 notebooks/07_ensemble_diversity.ipynb Complementary-family ensemble diagnostics
 notebooks/08_repeated_validation.ipynb Repeated-split robustness confirmation
+notebooks/09_feature_discovery.ipynb Targeted feature discovery and cross-seed confirmation
 reports/                            Tracked summary metrics and diagnostics; large caches are ignored
 assets/                             Static portfolio figures used by the README
 src/kaggle_smartphone_addiction/    Reusable data, CV, modeling, and submission code
@@ -156,8 +169,9 @@ uv run tune-boosters
 uv run analyze-convergence
 uv run evaluate-diversity
 uv run validate-repeated-cv
+uv run discover-features
 ```
 
-E5–E8 are intentionally expensive; their saved reports should be used for review unless reproduction is required. Submission generation includes local schema, row-count, ID-order, missing-value, and probability-range checks. Nothing in this repository automatically submits to Kaggle.
+E5–E9 are intentionally expensive; their saved reports should be used for review unless reproduction is required. Submission generation includes local schema, row-count, ID-order, missing-value, and probability-range checks. Nothing in this repository automatically submits to Kaggle.
 
-CI validates every notebook's structure and executes only the report-driven summary notebook; it deliberately does not run modeling notebooks 01–06. The project is available under the [MIT License](LICENSE).
+CI validates every notebook's structure and executes only the report-driven summary notebook; it deliberately does not run modeling notebooks 01–09. The project is available under the [MIT License](LICENSE).

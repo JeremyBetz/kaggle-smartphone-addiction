@@ -31,6 +31,7 @@ tune-boosters = "kaggle_smartphone_addiction.boosting_tuning:main"
 analyze-convergence = "kaggle_smartphone_addiction.convergence:main"
 evaluate-diversity = "kaggle_smartphone_addiction.ensemble_diversity:main"
 validate-repeated-cv = "kaggle_smartphone_addiction.repeated_validation:main"
+discover-features = "kaggle_smartphone_addiction.feature_discovery:main"
 
 [build-system]
 requires = ["uv_build>=0.12.6,<0.13.0"]

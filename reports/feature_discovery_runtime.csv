@@ -1,0 +1,4 @@
+stage,recorded_fit_and_prediction_seconds,recorded_minutes,scope,note
+development_screen_and_package,296.3683496338781,4.939472493897968,ten candidates plus one single-feature reproducibility package,First-run measured model fit and OOF prediction time
+candidate_confirmation_oof,2766.491629872966,46.1081938312161,seed 42 plus five repeated seeds for candidate components,First-run measured model fit and OOF prediction time; E8 repeated-seed controls were reused
+total_recorded_cv,3062.859979506844,51.047666325114065,development and candidate confirmation,Excludes newly required seed-42 fixed controls and full-data submission fitting because those paths lacked persistent timing checkpoints
